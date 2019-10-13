@@ -1,14 +1,16 @@
-class Quote {
+class CustomQuote {
   String id;
   String content;
   String author;
+  bool isFavorite;
 
-  Quote({this.id, this.content, this.author});
+  CustomQuote(this.id, this.content, this.author, this.isFavorite);
 
-  Quote.fromJson(Map<String, dynamic> json) {
+  CustomQuote.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     content = json['content'];
     author = json['author'];
+    isFavorite = json['isFavorite'];
   }
 
   Map<String, dynamic> toJson() {
@@ -16,6 +18,7 @@ class Quote {
     data['id'] = this.id;
     data['content'] = this.content;
     data['author'] = this.author;
+    data['isFavorite'] = this.isFavorite;
     return data;
   }
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:quoted_images/models/image_custom.dart';
+import 'package:quoted_images/models/quote_custom.dart';
 import 'package:quoted_images/providers/images_random.dart';
 import 'package:quoted_images/providers/quotes_random.dart';
+import 'package:quoted_images/resources/file_handler_images.dart';
 import 'package:quoted_images/widgets/custom_drawer.dart';
 
 // TODO add stuff to drawer: favorites, settings, credits, about
@@ -12,7 +15,10 @@ class Random extends StatefulWidget {
   _RandomState createState() => _RandomState();
 }
 
-class _RandomState extends State<Random> {
+class _RandomState extends State<Random> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     Provider.of<RandomImages>(context, listen: false).init(context);
@@ -30,12 +36,24 @@ class _RandomState extends State<Random> {
     return foregroundColor;
   }
 
+  Color hexConvert(String color) {
+    var hexColor = color.toUpperCase().replaceAll("#", "");
+
+    if (hexColor.length == 6) {
+      hexColor = "DF" + hexColor;
+    }
+
+    Color retColor = Color(int.parse(hexColor, radix: 16));
+    return retColor.withOpacity(1);
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Consumer<RandomImages>(
       builder: (context, imageModel, child) {
         Color backgroundColor = imageModel.images.isNotEmpty
-            ? imageModel.images[imageModel.currentImgIndex].color
+            ? hexConvert(imageModel.images[imageModel.currentImgIndex].color)
             : Colors.white38;
         Color foregroundColor = getForegroundColor(backgroundColor);
 
@@ -94,6 +112,14 @@ class _RandomState extends State<Random> {
               ],
             ),
           ),
+//          floatingActionButton: FloatingActionButton(
+//            onPressed: () {
+//              ImageFileHandler fh = ImageFileHandler();
+//              fh
+//                  .getAllImages()
+//                  .then((q) => q.forEach((image) => print(image.id)));
+//            },
+//          ),
         );
       },
     );
@@ -121,54 +147,67 @@ class _QuoteSectionState extends State<QuoteSection> {
       onPageChanged: (newIndex) {
         widget.model.changeIndex(context, newIndex);
       },
-      itemBuilder: (context, index) => Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              child: Text(
-                widget.model.quotes[widget.model.currentQuoteIndex].content,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontStyle: FontStyle.italic,
-                  color: widget.color,
+      itemBuilder: (context, index) {
+        CustomQuote quote = widget.model.quotes[widget.model.currentQuoteIndex];
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                child: Text(
+                  quote.content,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontStyle: FontStyle.italic,
+                    color: widget.color,
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              child: Text(
-                '- ${widget.model.quotes[widget.model.currentQuoteIndex].author}',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: widget.color,
-                  fontWeight: FontWeight.bold,
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                child: Text(
+                  '- ${quote.author}',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: widget.color,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                onPressed: null,
-                // onPressed: () => toggleFavorite(),
-                icon: Icon(
-                  Icons.favorite_border,
-                  // _isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: widget.color,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () async {
+                    await widget.model.toggleFavorite(quote);
+                    setState(() {});
+//                  var permissionService = Provider.of<PermissionService>(context, listen: false);
+//                  bool hasStoragePermission = await permissionService.hasStoragePermission();
+//                  if (hasStoragePermission) {
+////                    quoteToggleFavorite();
+//                  } else {
+//                    Provider.of<PermissionService>(context, listen: false)
+//                        .requestStoragePermission();
+//                  }
+                  },
+                  // onPressed: () => toggleFavorite(),
+                  icon: Icon(
+                    quote.isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: widget.color,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -194,58 +233,63 @@ class _ImageSectionState extends State<ImageSection> {
       onPageChanged: (newIndex) {
         widget.model.changeIndex(context, newIndex);
       },
-      itemBuilder: (context, index) => Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height / 2,
-              minWidth: MediaQuery.of(context).size.width,
+      itemBuilder: (context, index) {
+        CustomImage image = widget.model.images[index];
+
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height / 2,
+                minWidth: MediaQuery.of(context).size.width,
+              ),
+              child: Image(
+                fit: BoxFit.cover,
+                image: NetworkImage(
+                  image.url,
+                ),
+              ),
             ),
-            child: Image(
-              fit: BoxFit.cover,
-              image: NetworkImage(
-                widget.model.images[index].url,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+//              IconButton(
+//                onPressed: null,
+//                // onPressed: () => showModalBottomSheet(
+//                // context: context,
+//                // backgroundColor: _backgroundColor,
+//                // builder: (context) {
+//                //   return bottomSheetContent();
+//                // }),
+//                icon: Icon(
+//                  Icons.info_outline,
+//                  color: widget.color,
+//                ),
+//              ),
+//              IconButton(
+//                onPressed: null,
+//                icon: Icon(
+//                  Icons.save_alt,
+//                  color: widget.color,
+//                ),
+//              ),
+                IconButton(
+                  onPressed: () async {
+                    await widget.model.toggleFavorite(image);
+                    setState(() {});
+                  },
+                  icon: Icon(
+                    image.isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: widget.color,
+                  ),
+                ),
+              ],
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                onPressed: null,
-                // onPressed: () => showModalBottomSheet(
-                // context: context,
-                // backgroundColor: _backgroundColor,
-                // builder: (context) {
-                //   return bottomSheetContent();
-                // }),
-                icon: Icon(
-                  Icons.info_outline,
-                  color: widget.color,
-                ),
-              ),
-              IconButton(
-                onPressed: null,
-                icon: Icon(
-                  Icons.save_alt,
-                  color: widget.color,
-                ),
-              ),
-              IconButton(
-                onPressed: null,
-                // onPressed: () => toggleFavorite(),
-                icon: Icon(
-                  Icons.favorite_border,
-                  // _isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: widget.color,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 }

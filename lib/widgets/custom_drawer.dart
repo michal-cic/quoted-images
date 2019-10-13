@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:quoted_images/pages/favorites.dart';
 import 'package:quoted_images/pages/random.dart';
+import 'package:quoted_images/providers/images_random.dart';
+import 'package:quoted_images/providers/quotes_favorite.dart';
+import 'package:quoted_images/providers/quotes_random.dart';
 
 class CustomDrawer extends StatefulWidget {
   @override
@@ -12,26 +16,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
       child: Column(
-        children: [
-          FlatButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Random(),
-              ),
-            ),
-            child: Text('random'),
-          ),
-          FlatButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Favorites(),
-              ),
-            ),
-            child: Text('favorites'),
-          ),
-        ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [],
       ),
     );
   }

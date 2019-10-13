@@ -1,7 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class PermissionProvider with ChangeNotifier {
+class PermissionService {
   final PermissionHandler _permissionHandler = PermissionHandler();
 
   Future<bool> _requestPermission(PermissionGroup permission) async {
