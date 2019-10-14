@@ -3,7 +3,7 @@ import 'package:quoted_images/models/image_custom.dart';
 import 'package:quoted_images/models/image_unsplash.dart';
 import 'package:quoted_images/resources/unsplash_api.dart';
 
-class CustomImageProvider with ChangeNotifier {
+class RandomImages with ChangeNotifier {
   List<CustomImage> randomImages = [];
   int randomImgIndex = 0;
 
