@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:quoted_images/pages/favorites.dart';
 import 'package:quoted_images/pages/random.dart';
-import 'package:quoted_images/providers/images_favorite.dart';
-import 'package:quoted_images/providers/images_random.dart';
-import 'package:quoted_images/providers/quotes_favorite.dart';
+import 'package:quoted_images/providers/images.dart';
 import 'package:quoted_images/providers/quotes_random.dart';
 
 class PageHolder extends StatefulWidget {
@@ -17,28 +14,19 @@ class _PageHolderState extends State<PageHolder> {
 
   @override
   void initState() {
+    ChangeNotifierProvider<CustomImageProvider> imageProvider = ChangeNotifierProvider<CustomImageProvider>(
+      builder: (context) => CustomImageProvider(),
+    );
+
     pages = [
       MultiProvider(
         providers: [
-          ChangeNotifierProvider<RandomImages>(
-            builder: (context) => RandomImages(),
-          ),
+          imageProvider,
           ChangeNotifierProvider<RandomQuotes>(
             builder: (context) => RandomQuotes(),
           ),
         ],
         child: Random(),
-      ),
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider<FavoriteQuotes>(
-            builder: (context) => FavoriteQuotes(),
-          ),
-          ChangeNotifierProvider<FavoriteImages>(
-            builder: (context) => FavoriteImages(),
-          ),
-        ],
-        child: Favorites(),
       ),
     ];
     super.initState();

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:quoted_images/models/image_unsplash.dart';
-import 'package:quoted_images/security/keys.dart';
+import 'package:quoted_images/util/keys.dart';
 
 class UnsplashApi {
   // replace with your unsplash api key (you can get it here: https://unsplash.com/developers)
