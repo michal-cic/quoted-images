@@ -1,6 +1,6 @@
 # Quoted Images
 
-A sipmle Android/iOS application to browse random images and quotes.
+A simple Android/iOS application to browse random images and quotes.
 
 ## Getting Started
 
