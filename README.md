@@ -1,6 +1,6 @@
 # Quoted Images
 
-A simple Android/iOS application to browse random images and quotes.
+A simple [Android](https://play.google.com/store/apps/details?id=com.michal.cic.quoted_images)/iOS application to browse random images and quotes.
 
 ## Getting Started
 
