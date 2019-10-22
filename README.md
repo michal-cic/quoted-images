@@ -1,6 +1,6 @@
-# quoted_images
+# Quoted Images
 
-A sipmle application to browse images and quotes.
+A sipmle Android/iOS application to browse random images and quotes.
 
 ## Getting Started
 
