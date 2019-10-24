@@ -48,6 +48,10 @@ class _RandomState extends State<Random> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+                Container(
+                  color: backgroundColor,
+                  height: 1,
+                ),
                 Divider(
                   height: 0,
                   color: foregroundColor,
@@ -143,8 +147,8 @@ class _QuoteSectionState extends State<QuoteSection> {
                 ),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 8.0),
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   child: Text(
